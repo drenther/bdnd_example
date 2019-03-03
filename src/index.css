@@ -1,0 +1,20 @@
+header.navbar {
+  height: 40px;
+  margin: 5px 20px;
+}
+
+div.menu .menu-item.tile.tile-centered {
+  margin-top: 5px;
+}
+
+.menu.hero-list {
+  z-index: inherit;
+  transform: none;
+  min-height: 500px;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  font-size: 14px;
+}

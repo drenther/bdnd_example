@@ -1,55 +1,55 @@
-export const comicType = {
-  DC: 'DC',
-  MARVEL: 'Marvel',
+export const COMICS = {
+  DC: 'dc',
+  MARVEL: 'marvel',
 };
 
-export const heroes = [
+export const HEROES = [
   {
     name: 'Superman',
-    comic: 'DC',
+    comics: 'dc',
   },
   {
     name: 'Batman',
-    comic: 'DC',
+    comics: 'dc',
   },
   {
     name: 'Flash',
-    comic: 'DC',
+    comics: 'dc',
   },
   {
     name: 'Aquaman',
-    comic: 'DC',
+    comics: 'dc',
   },
   {
     name: 'Wonder Woman',
-    comic: 'DC',
+    comics: 'dc',
   },
   {
     name: 'Green Lantern',
-    comic: 'DC',
+    comics: 'dc',
   },
   {
     name: 'Iron Man',
-    comic: 'Marvel',
+    comics: 'marvel',
   },
   {
     name: 'Spiderman',
-    comic: 'Marvel',
+    comics: 'marvel',
   },
   {
     name: 'Captain America',
-    comic: 'Marvel',
+    comics: 'marvel',
   },
   {
     name: 'Thor',
-    comic: 'Marvel',
+    comics: 'marvel',
   },
   {
     name: 'Hulk',
-    comic: 'Marvel',
+    comics: 'marvel',
   },
   {
     name: 'Black Widow',
-    comic: 'Marvel',
+    comics: 'marvel',
   },
 ];
