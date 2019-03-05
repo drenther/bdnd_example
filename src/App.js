@@ -114,6 +114,12 @@ class App extends React.Component {
       </>
     );
   }
+
+  componentWillUnmount() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+  }
 }
 
 export default App;
