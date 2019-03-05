@@ -1,45 +1,68 @@
 import React from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext } from 'react-beautiful-dnd';
 
-import { heroes, comicType } from './custom/data';
-import { shuffle } from './custom/helpers';
+import { HEROES, COMICS } from './custom/data';
+import { shuffle, getTimeLeft, move, GAME_STATE } from './custom/utils';
+
+import Modal from './components/Modal';
+import Header from './components/Header';
+import Dropzone from './components/Dropzone';
+import Footer from './components/Footer';
+
+const GAME_DURATION = 1000 * 30; // 30 seconds
 
 const initialState = {
   // we initialize the state by populating the bench with a shuffled collection of heroes
-  bench: shuffle(heroes),
-  dc: [],
-  marvel: [],
-};
-
-const listStyle = {
-  minHeight: 100,
-  width: 100,
-  background: 'lightblue',
-  padding: 2,
-};
-
-const move = (state, source, destination) => {
-  const srcListClone = [...state[source.droppableId]];
-  const destListClone =
-    source.droppableId === destination.droppableId
-      ? srcListClone
-      : [...state[destination.droppableId]];
-
-  const [movedElement] = srcListClone.splice(source.index, 1);
-  destListClone.splice(destination.index, 0, movedElement);
-
-  return {
-    [source.droppableId]: srcListClone,
-    ...(source.droppableId === destination.droppableId
-      ? {}
-      : {
-          [destination.droppableId]: destListClone,
-        }),
-  };
+  bench: shuffle(HEROES),
+  [COMICS.DC]: [],
+  [COMICS.MARVEL]: [],
+  gameState: GAME_STATE.READY,
+  timeLeft: 0,
 };
 
 class App extends React.Component {
   state = initialState;
+
+  startGame = () => {
+    this.currentDeadline = Date.now() + GAME_DURATION;
+
+    this.setState(
+      {
+        gameState: GAME_STATE.PLAYING,
+        timeLeft: getTimeLeft(this.currentDeadline),
+      },
+      this.gameLoop
+    );
+  };
+
+  gameLoop = () => {
+    this.timer = setInterval(() => {
+      const timeLeft = getTimeLeft(this.currentDeadline);
+      const isTimeout = timeLeft <= 0;
+      if (isTimeout && this.timer) {
+        clearInterval(this.timer);
+      }
+
+      this.setState({
+        timeLeft: isTimeout ? 0 : timeLeft,
+        gameState: isTimeout ? GAME_STATE.DONE : GAME_STATE.PLAYING,
+      });
+    }, 1000);
+  };
+
+  endGame = () => {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+
+    this.setState({
+      gameState: GAME_STATE.DONE,
+    });
+  };
+
+  resetGame = () => {
+    this.setState(initialState);
+  };
 
   onDragEnd = ({ source, destination }) => {
     if (!destination) {
@@ -52,107 +75,34 @@ class App extends React.Component {
   };
 
   render() {
+    const { gameState, timeLeft, bench, ...groups } = this.state;
+    const isDropDisabled = gameState === GAME_STATE.DONE;
+
     return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            justifyContent: 'space-around',
-          }}
-        >
-          <Droppable droppableId="bench">
-            {(provided, snapshot) => {
-              return (
-                <div
-                  {...provided.droppableProps}
-                  className="bench"
-                  style={listStyle}
-                  ref={provided.innerRef}
-                >
-                  {this.state.bench.map((item, index) => {
-                    return (
-                      <Draggable key={item.name} draggableId={item.name} index={index}>
-                        {(provided, snapshot) => {
-                          return (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              {item.name}
-                            </div>
-                          );
-                        }}
-                      </Draggable>
-                    );
-                  })}
-                </div>
-              );
-            }}
-          </Droppable>
-          <Droppable droppableId="marvel">
-            {(provided, snapshot) => {
-              return (
-                <div
-                  {...provided.droppableProps}
-                  className="marvel"
-                  style={listStyle}
-                  ref={provided.innerRef}
-                >
-                  {this.state.marvel.map((item, index) => {
-                    return (
-                      <Draggable key={item.name} draggableId={item.name} index={index}>
-                        {(provided, snapshot) => {
-                          return (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              {item.name}
-                            </div>
-                          );
-                        }}
-                      </Draggable>
-                    );
-                  })}
-                </div>
-              );
-            }}
-          </Droppable>
-          <Droppable droppableId="dc">
-            {(provided, snapshot) => {
-              return (
-                <div
-                  {...provided.droppableProps}
-                  className="dc"
-                  style={listStyle}
-                  ref={provided.innerRef}
-                >
-                  {this.state.dc.map((item, index) => {
-                    return (
-                      <Draggable key={item.name} draggableId={item.name} index={index}>
-                        {(provided, snapshot) => {
-                          return (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              {item.name}
-                            </div>
-                          );
-                        }}
-                      </Draggable>
-                    );
-                  })}
-                </div>
-              );
-            }}
-          </Droppable>
-        </div>
-      </DragDropContext>
+      <>
+        <Header gameState={gameState} timeLeft={timeLeft} endGame={this.endGame} />
+        {this.state.gameState !== GAME_STATE.PLAYING && (
+          <Modal
+            startGame={this.startGame}
+            resetGame={this.resetGame}
+            timeLeft={timeLeft}
+            gameState={gameState}
+            groups={groups}
+          />
+        )}
+        {(this.state.gameState === GAME_STATE.PLAYING || this.state.gameState === GAME_STATE.DONE) && (
+          <DragDropContext onDragEnd={this.onDragEnd}>
+            <div className="container">
+              <div className="columns">
+                <Dropzone id={COMICS.MARVEL} heroes={this.state[COMICS.MARVEL]} isDropDisabled={isDropDisabled} />
+                <Dropzone id="bench" heroes={bench} isDropDisabled={isDropDisabled} />
+                <Dropzone id={COMICS.DC} heroes={this.state[COMICS.DC]} isDropDisabled={isDropDisabled} />
+              </div>
+            </div>
+          </DragDropContext>
+        )}
+        <Footer />
+      </>
     );
   }
 }
