@@ -45,7 +45,7 @@ class App extends React.Component {
 
       this.setState({
         timeLeft: isTimeout ? 0 : timeLeft,
-        gameState: isTimeout ? GAME_STATE.DONE : GAME_STATE.PLAYING,
+        ...(isTimeout ? { gameState: GAME_STATE.DONE } : {}),
       });
     }, 1000);
   };
