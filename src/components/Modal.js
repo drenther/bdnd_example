@@ -7,7 +7,7 @@ const Modal = ({ gameState, groups, startGame, timeLeft, resetGame }) => (
     <div className="modal-overlay" />
     <div className="modal-container">
       <div className="modal-header">
-        <div className="modal-title h4">Marvel vs DC</div>
+        <div className="modal-title h4">Line up the Heroes</div>
       </div>
       <div className="modal-body">
         <div className="content h6">
@@ -18,7 +18,10 @@ const Modal = ({ gameState, groups, startGame, timeLeft, resetGame }) => (
         </div>
       </div>
       <div className="modal-footer">
-        <button className="btn btn-primary" onClick={gameState === GAME_STATE.READY ? startGame : resetGame}>
+        <button
+          className="btn btn-primary"
+          onClick={gameState === GAME_STATE.READY ? startGame : resetGame}
+        >
           {gameState === GAME_STATE.READY ? 'Start new game' : 'Restart game'}
         </button>
       </div>

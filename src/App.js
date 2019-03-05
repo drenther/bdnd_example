@@ -90,13 +90,22 @@ class App extends React.Component {
             groups={groups}
           />
         )}
-        {(this.state.gameState === GAME_STATE.PLAYING || this.state.gameState === GAME_STATE.DONE) && (
+        {(this.state.gameState === GAME_STATE.PLAYING ||
+          this.state.gameState === GAME_STATE.DONE) && (
           <DragDropContext onDragEnd={this.onDragEnd}>
             <div className="container">
               <div className="columns">
-                <Dropzone id={COMICS.MARVEL} heroes={this.state[COMICS.MARVEL]} isDropDisabled={isDropDisabled} />
+                <Dropzone
+                  id={COMICS.MARVEL}
+                  heroes={this.state[COMICS.MARVEL]}
+                  isDropDisabled={isDropDisabled}
+                />
                 <Dropzone id="bench" heroes={bench} isDropDisabled={isDropDisabled} />
-                <Dropzone id={COMICS.DC} heroes={this.state[COMICS.DC]} isDropDisabled={isDropDisabled} />
+                <Dropzone
+                  id={COMICS.DC}
+                  heroes={this.state[COMICS.DC]}
+                  isDropDisabled={isDropDisabled}
+                />
               </div>
             </div>
           </DragDropContext>
